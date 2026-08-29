@@ -116,6 +116,11 @@
   .icon-btn { background:none; border:none; cursor:pointer; padding:4px; display:flex; }
   .icon-wa { color:#25D366; }
   .icon-trash { color:#dc2626cc; }
+  .icon-renew { background:#1C1917; color:#F5EDDD; border-radius:8px; padding:6px 10px; font-size:.82rem; font-weight:800; gap:4px; }
+  .icon-renew:hover { background:#2c2822; }
+  .sub-date { display:flex; flex-direction:column; gap:2px; }
+  .sub-date span { font-size:.7rem; color:#a89a78; font-weight:700; }
+  .sub-date input { width:auto; padding:5px 8px; font-size:.82rem; border-radius:8px; }
   .flex1 { flex:1; min-width:150px; }
 
   .g-manage-row { background:#FAF6EE; border:1px solid #E3D6B8; border-radius:12px; padding:14px 16px; display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin-bottom:10px; }
@@ -150,6 +155,10 @@ const DEFAULT_GROUPS = [
 const uid = () => Math.random().toString(36).slice(2, 10);
 const waLink = (num, msg) => `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const todayISO = () => new Date().toISOString().slice(0, 10);
+const addMonthISO = (dateStr) => { const d = dateStr ? new Date(dateStr) : new Date(); d.setMonth(d.getMonth() + 1); return d.toISOString().slice(0, 10); };
+const isActive = (r) => !!(r.paidUntil && r.paidUntil >= todayISO());
+const fmtDateAr = (iso) => iso ? new Date(iso).toLocaleDateString("ar-DZ") : "—";
 
 function notifyBackend(entry, groupName) {
   const url = STATE.settings.scriptUrl;
@@ -381,7 +390,7 @@ function dashboardLoginHtml(errMsg) {
 function dashboardHtml() {
   const weekAgo = Date.now() - 7*24*60*60*1000;
   const thisWeek = STATE.regs.filter(r => new Date(r.createdAt).getTime() >= weekAgo).length;
-  const unpaid = STATE.regs.filter(r => !r.paid).length;
+  const expired = STATE.regs.filter(r => !isActive(r)).length;
 
   const tabs = [
     { id: "overview", label: "نظرة عامة", ic: "dashboard" },
@@ -396,7 +405,7 @@ function dashboardHtml() {
       ${statCard("users", "إجمالي المسجلين", STATE.regs.length)}
       ${statCard("calendar", "عدد الأفواج", STATE.groups.length)}
       ${statCard("userPlus", "تسجيلات هذا الأسبوع", thisWeek)}
-      ${statCard("wallet", "مستحقات غير مسدَّدة", unpaid)}
+      ${statCard("wallet", "اشتراكات منتهية/غير مفعّلة", expired)}
     </div>`;
   } else if (STATE.dashTab === "regs") {
     body = regsTableHtml();
@@ -427,10 +436,10 @@ function statCard(ic, label, value) {
 }
 
 function regsTableHtml() {
-  const filters = [{id:"all",l:"الكل"},{id:"unpaid",l:"غير مسدَّدة"},{id:"paid",l:"مسدَّدة"}];
+  const filters = [{id:"all",l:"الكل"},{id:"unpaid",l:"منتهية/غير مفعّلة"},{id:"paid",l:"نشطة"}];
   let list = STATE.regs;
-  if (STATE.regFilter === "paid") list = list.filter(r => r.paid);
-  if (STATE.regFilter === "unpaid") list = list.filter(r => !r.paid);
+  if (STATE.regFilter === "paid") list = list.filter(r => isActive(r));
+  if (STATE.regFilter === "unpaid") list = list.filter(r => !isActive(r));
   list = [...list].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   const groupName = (id) => { const g = STATE.groups.find(g => g.id === id); return g ? g.name : "—"; };
@@ -439,16 +448,23 @@ function regsTableHtml() {
   <div class="filters">
     ${filters.map(f => `<button class="filter-btn ${STATE.regFilter===f.id?"active":""}" data-filter="${f.id}">${f.l}</button>`).join("")}
   </div>
-  ${list.length === 0 ? `<div class="empty">لا توجد تسجيلات بعد. عندما يسجّل طالب، ستظهر بياناته هنا مباشرة.</div>` : list.map(r => `
+  ${list.length === 0 ? `<div class="empty">لا توجد تسجيلات بعد. عندما يسجّل طالب، ستظهر بياناته هنا مباشرة.</div>` : list.map(r => {
+    const active = isActive(r);
+    const statusLabel = r.paidUntil ? (active ? `نشط حتى ${fmtDateAr(r.paidUntil)}` : `منتهي منذ ${fmtDateAr(r.paidUntil)}`) : "لم يُفعَّل بعد";
+    return `
     <div class="reg-row">
       <div class="flex1"><div class="reg-name">${esc(r.name)}</div><div class="reg-phone">${icon("phone",13)} ${esc(r.phone)}</div></div>
       <div class="reg-group">${esc(groupName(r.groupId))}</div>
-      <div class="reg-date">${new Date(r.createdAt).toLocaleDateString("ar-DZ")}</div>
-      <button class="pill ${r.paid?"paid":"unpaid"}" data-toggle-paid="${r.id}">${icon(r.paid?"checkCircle":"circle",15)} ${r.paid?"مسدَّدة":"غير مسدَّدة"}</button>
+      <div class="reg-date">سُجّل: ${new Date(r.createdAt).toLocaleDateString("ar-DZ")}</div>
+      <span class="pill ${active?"paid":"unpaid"}">${icon(active?"checkCircle":"circle",15)} ${statusLabel}</span>
+      <label class="sub-date"><span>آخر تسديد</span><input type="date" data-payment-date="${r.id}" value="${r.lastPaymentDate||""}" /></label>
+      <label class="sub-date"><span>صالح حتى</span><input type="date" data-paid-until="${r.id}" value="${r.paidUntil||""}" /></label>
+      <button class="icon-btn icon-renew" title="تجديد شهر من اليوم" data-renew="${r.id}">${icon("plus",17)} شهر</button>
       <a class="icon-btn icon-wa" title="تذكير عبر واتساب" target="_blank" rel="noopener noreferrer"
-        href="${waLink(r.phone.replace(/[^0-9]/g,""), r.paid ? `مرحباً ${r.name}، هذا تأكيد استلام مستحقات حصصك، شكراً لك.` : `مرحباً ${r.name}، تذكير ودّي بخصوص مستحقات حصص هذا الشهر. شكراً لتفهّمك.`)}">${icon("wa",19)}</a>
+        href="${waLink(r.phone.replace(/[^0-9]/g,""), active ? `مرحباً ${r.name}، اشتراكك نشط حتى ${fmtDateAr(r.paidUntil)}.` : `مرحباً ${r.name}، تذكير ودّي بخصوص تجديد اشتراك حصصك. شكراً لتفهّمك.`)}">${icon("wa",19)}</a>
       <button class="icon-btn icon-trash" title="حذف" data-remove-reg="${r.id}">${icon("trash",17)}</button>
-    </div>`).join("")}`;
+    </div>`;
+  }).join("")}`;
 }
 
 function groupsManagerHtml() {
@@ -559,7 +575,8 @@ function attachHandlers() {
         phone: f.phone.value.trim(),
         groupId: f.groupId.value,
         note: f.note.value.trim(),
-        paid: false,
+        paidUntil: "",
+        lastPaymentDate: "",
         createdAt: new Date().toISOString(),
       };
       if (!entry.name || !entry.phone || !entry.groupId) return;
@@ -593,10 +610,30 @@ function attachHandlers() {
   document.querySelectorAll("[data-filter]").forEach(btn => {
     btn.onclick = () => { STATE.regFilter = btn.getAttribute("data-filter"); render(); };
   });
-  document.querySelectorAll("[data-toggle-paid]").forEach(btn => {
+  document.querySelectorAll("[data-renew]").forEach(btn => {
     btn.onclick = () => {
-      const id = btn.getAttribute("data-toggle-paid");
-      STATE.regs = STATE.regs.map(r => r.id === id ? { ...r, paid: !r.paid } : r);
+      const id = btn.getAttribute("data-renew");
+      STATE.regs = STATE.regs.map(r => {
+        if (r.id !== id) return r;
+        const base = isActive(r) ? r.paidUntil : todayISO();
+        return { ...r, paidUntil: addMonthISO(base), lastPaymentDate: todayISO() };
+      });
+      storSet("registrations", STATE.regs);
+      render();
+    };
+  });
+  document.querySelectorAll("[data-paid-until]").forEach(input => {
+    input.onchange = () => {
+      const id = input.getAttribute("data-paid-until");
+      STATE.regs = STATE.regs.map(r => r.id === id ? { ...r, paidUntil: input.value } : r);
+      storSet("registrations", STATE.regs);
+      render();
+    };
+  });
+  document.querySelectorAll("[data-payment-date]").forEach(input => {
+    input.onchange = () => {
+      const id = input.getAttribute("data-payment-date");
+      STATE.regs = STATE.regs.map(r => r.id === id ? { ...r, lastPaymentDate: input.value } : r);
       storSet("registrations", STATE.regs);
       render();
     };
