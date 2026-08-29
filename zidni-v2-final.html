@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>زدني — تحضير بكالوريا | لغة عربية وآدابها</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700;900&display=swap');
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:'Tajawal',Tahoma,Arial,sans-serif; background:#FBF8F0; color:#1C1917; }
+  .disp { font-family:'Amiri',Georgia,serif; }
+  a { text-decoration:none; color:inherit; }
+  button, input, select, textarea { font-family:inherit; font-size:1rem; }
+  .wrap { max-width:980px; margin:0 auto; padding:0 22px; }
+  .btn { display:inline-flex; align-items:center; gap:8px; font-weight:800; border-radius:10px; padding:12px 26px; border:none; cursor:pointer; transition:.15s; }
+  .btn-gold { background:#B08D57; color:#1C1917; }
+  .btn-gold:hover { background:#c49f66; }
+  .btn-dark { background:#1C1917; color:#F5EDDD; }
+  .btn-dark:hover { background:#2c2822; }
+  .btn-outline { background:transparent; border:1px solid #D9CBA6; color:#1C1917; }
+  .btn-outline:hover { border-color:#B08D57; }
+  .btn-wa { background:#25D366; color:#fff; }
+  .btn:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:2px solid #B08D57; outline-offset:2px; }
+  input, select, textarea { width:100%; border:1px solid #D9CBA6; background:#fff; border-radius:10px; padding:11px 14px; color:#1C1917; }
+  input:focus, select:focus, textarea:focus { border-color:#B08D57; outline:none; }
+  label.field { display:block; margin-bottom:18px; }
+  label.field > span { display:block; font-weight:800; font-size:.9rem; margin-bottom:6px; }
+  .card { background:#FAF6EE; border:1px solid #E3D6B8; border-radius:14px; padding:20px; }
+
+  nav.top { background:#1C1917; padding:12px 22px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
+  .navlinks { display:flex; align-items:center; gap:6px; }
+  .navlinks button { background:none; border:none; color:#F5EDDD; font-weight:800; padding:7px 12px; cursor:pointer; display:flex; align-items:center; gap:6px; }
+  .navlinks button:hover { color:#B08D57; }
+
+  .logo-text { font-family:'Amiri',Georgia,serif; font-weight:700; background:linear-gradient(90deg,#E9C98A 0%,#F5EDDD 45%,#B08D57 100%); -webkit-background-clip:text; background-clip:text; color:transparent; letter-spacing:1px; }
+  .logo-orn { color:#B08D57; opacity:.7; }
+  .logo-pen { display:block; width:100%; height:10px; margin-top:-4px; }
+
+  .hero { position:relative; background:#1C1917; overflow:hidden; background-image:radial-gradient(circle at 1px 1px, rgba(176,141,87,.35) 1px, transparent 0); background-size:22px 22px; }
+  .hero-inner { max-width:760px; margin:0 auto; padding:60px 22px 76px; text-align:center; }
+  .badge { display:inline-flex; align-items:center; gap:8px; color:#B08D57; font-size:.85rem; font-weight:800; border:1px solid rgba(176,141,87,.4); border-radius:999px; padding:6px 16px; margin-bottom:20px; }
+  .hero p.lead { color:#E3D6B8; margin-top:22px; font-size:1.1rem; line-height:2; }
+  .hero p.lead b { color:#B08D57; }
+  .hero-actions { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:12px; margin-top:34px; }
+
+  .about { display:grid; grid-template-columns:auto 1fr; gap:30px; align-items:center; padding:52px 0; }
+  @media (max-width:640px){ .about{ grid-template-columns:1fr; text-align:center; } }
+  .avatar { width:96px; height:96px; border-radius:999px; background:#1C1917; display:flex; align-items:center; justify-content:center; margin:0 auto; }
+  .about p { color:#4a4436; line-height:2; }
+
+  .steps-sec { background:#FAF6EE; border-top:1px solid #E3D6B8; border-bottom:1px solid #E3D6B8; padding:52px 0; }
+  .steps-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:26px; margin-top:30px; }
+  @media (max-width:720px){ .steps-grid{ grid-template-columns:1fr; } }
+  .step-n { font-size:2.4rem; font-weight:700; color:#E3D6B8; margin-bottom:6px; }
+  .step-t { font-weight:800; margin-bottom:4px; }
+  .step-d { color:#6b5f47; font-size:.92rem; line-height:1.7; }
+
+  .groups-sec { padding:52px 0; }
+  .center { text-align:center; }
+  .muted { color:#6b5f47; }
+  .groups-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:28px; }
+  @media (max-width:820px){ .groups-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:560px){ .groups-grid{ grid-template-columns:1fr; } }
+  .g-card { border:1px solid #E3D6B8; border-radius:14px; padding:18px; background:#fff; transition:.15s; }
+  .g-card:hover { border-color:#B08D57; }
+  .g-card h3 { margin:0 0 4px; font-size:1.05rem; }
+  .g-card .sub { color:#6b5f47; font-size:.85rem; margin-bottom:14px; }
+  .g-line { display:flex; align-items:center; gap:8px; font-size:.9rem; color:#4a4436; margin-bottom:6px; }
+
+  footer.foot { background:#1C1917; color:#E3D6B8; }
+  .foot-inner { max-width:980px; margin:0 auto; padding:34px 22px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; }
+  .foot-links { display:flex; align-items:center; gap:18px; font-size:.9rem; }
+  .foot-links a, .foot-links button { display:flex; align-items:center; gap:6px; background:none; border:none; color:inherit; cursor:pointer; font-weight:700; }
+  .foot-links a:hover, .foot-links button:hover { color:#B08D57; }
+
+  .reg-page, .login-page { max-width:520px; margin:0 auto; padding:60px 22px; }
+  .reg-page.done { text-align:center; padding-top:76px; }
+  .done-icon { width:64px; height:64px; border-radius:999px; background:#1C1917; display:flex; align-items:center; justify-content:center; margin:0 auto 18px; }
+  .success-actions { display:flex; flex-direction:column; gap:12px; margin-top:30px; }
+  .success-actions .btn { justify-content:center; }
+  .back-link { display:inline-block; margin-top:30px; font-size:.9rem; color:#6b5f47; text-decoration:underline; background:none; border:none; cursor:pointer; }
+
+  .login-page { text-align:center; padding-top:96px; }
+  .lock-circle { width:56px; height:56px; border-radius:999px; background:#1C1917; display:flex; align-items:center; justify-content:center; margin:0 auto 18px; }
+  .login-page form { display:flex; flex-direction:column; gap:10px; margin-top:22px; }
+  .err { color:#b91c1c; font-size:.88rem; margin:0; }
+  .hint { font-size:.78rem; color:#a89a78; margin-top:16px; }
+
+  .dash { max-width:980px; margin:0 auto; padding:36px 22px; }
+  .dash-head { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-bottom:28px; }
+  .tabs { display:flex; flex-wrap:wrap; gap:8px; border-bottom:1px solid #E3D6B8; padding-bottom:12px; margin-bottom:28px; }
+  .tab-btn { display:flex; align-items:center; gap:7px; padding:9px 16px; border-radius:10px; font-weight:800; font-size:.9rem; border:none; cursor:pointer; background:none; color:#6b5f47; }
+  .tab-btn:hover { background:#FAF6EE; }
+  .tab-btn.active { background:#1C1917; color:#F5EDDD; }
+
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  @media (max-width:760px){ .stats-grid{ grid-template-columns:1fr 1fr; } }
+  .stat-card { background:#FAF6EE; border:1px solid #E3D6B8; border-radius:12px; padding:18px; display:flex; align-items:center; gap:14px; }
+  .stat-icon { width:44px; height:44px; border-radius:10px; background:#1C1917; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .stat-val { font-size:1.5rem; font-weight:900; }
+  .stat-lbl { font-size:.85rem; color:#6b5f47; }
+
+  .filters { display:flex; gap:8px; margin-bottom:18px; }
+  .filter-btn { font-size:.85rem; font-weight:800; padding:7px 15px; border-radius:999px; border:1px solid #D9CBA6; background:none; cursor:pointer; color:#6b5f47; }
+  .filter-btn.active { background:#1C1917; color:#F5EDDD; border-color:#1C1917; }
+  .empty { text-align:center; padding:60px 20px; color:#a89a78; border:1px dashed #E3D6B8; border-radius:14px; }
+  .reg-row { background:#FAF6EE; border:1px solid #E3D6B8; border-radius:12px; padding:14px 16px; display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin-bottom:10px; }
+  .reg-name { font-weight:800; }
+  .reg-phone { font-size:.86rem; color:#6b5f47; display:flex; align-items:center; gap:5px; direction:ltr; }
+  .reg-group { font-size:.9rem; color:#4a4436; min-width:150px; }
+  .reg-date { font-size:.78rem; color:#a89a78; min-width:85px; }
+  .pill { display:flex; align-items:center; gap:6px; font-size:.85rem; font-weight:800; padding:6px 12px; border-radius:999px; border:none; cursor:pointer; }
+  .pill.paid { background:#dcfce7; color:#166534; }
+  .pill.unpaid { background:#fef3c7; color:#92400e; }
+  .icon-btn { background:none; border:none; cursor:pointer; padding:4px; display:flex; }
+  .icon-wa { color:#25D366; }
+  .icon-trash { color:#dc2626cc; }
+  .flex1 { flex:1; min-width:150px; }
+
+  .g-manage-row { background:#FAF6EE; border:1px solid #E3D6B8; border-radius:12px; padding:14px 16px; display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin-bottom:10px; }
+  .g-form { background:#fff; border:1px dashed #D9CBA6; border-radius:14px; padding:20px; display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  @media (max-width:600px){ .g-form{ grid-template-columns:1fr; } }
+  .g-form label.field { margin-bottom:0; }
+
+  .settings-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media (max-width:700px){ .settings-grid{ grid-template-columns:1fr; } }
+  .settings-note { grid-column:1/-1; font-size:.78rem; color:#a89a78; background:#fff; border:1px dashed #D9CBA6; border-radius:12px; padding:14px; line-height:1.7; }
+  .ok-msg { color:#15803d; font-size:.88rem; display:flex; align-items:center; gap:6px; margin-top:6px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+/* ------------------------------------------------------------------ */
+/*  إعدادات ثابتة                                                     */
+/* ------------------------------------------------------------------ */
+const WHATSAPP_NUMBER = "213671143821"; // 0671143821 بالصيغة الدولية بدون صفر
+const TEACHER_NAME = "الأستاذ عدالة بشير";
+const DEFAULT_PASSCODE = "2026";
+
+const DEFAULT_GROUPS = [
+  { id: "g1", name: "فوج آداب وفلسفة", subject: "تحضير بكالوريا — لغة عربية وآدابها", day: "السبت", time: "14:00 - 15:30", capacity: 18 },
+  { id: "g2", name: "فوج لغات أجنبية", subject: "تحضير بكالوريا — لغة عربية وآدابها", day: "السبت", time: "16:00 - 17:30", capacity: 18 },
+  { id: "g3", name: "فوج علوم تجريبية", subject: "تحضير بكالوريا — لغة عربية وآدابها", day: "الأحد", time: "14:00 - 15:30", capacity: 18 },
+  { id: "g6", name: "فوج تسيير واقتصاد", subject: "تحضير بكالوريا — لغة عربية وآدابها", day: "الخميس", time: "15:00 - 16:30", capacity: 18 },
+];
+
+const uid = () => Math.random().toString(36).slice(2, 10);
+const waLink = (num, msg) => `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+
+function notifyBackend(entry, groupName) {
+  const url = STATE.settings.scriptUrl;
+  if (!url) return; // لم يُضبط رابط جوجل شيت بعد
+  try {
+    fetch(url, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ name: entry.name, phone: entry.phone, groupName, note: entry.note, createdAt: entry.createdAt }),
+    }).catch(() => {});
+  } catch { /* تجاهل بصمت إن تعذّر الإرسال */ }
+}
+
+/* ------------------------------------------------------------------ */
+/*  تخزين محلي                                                        */
+/* ------------------------------------------------------------------ */
+function storGet(key, fallback) {
+  try { const raw = localStorage.getItem("zdn_" + key); return raw ? JSON.parse(raw) : fallback; }
+  catch { return fallback; }
+}
+function storSet(key, value) {
+  try { localStorage.setItem("zdn_" + key, JSON.stringify(value)); return true; }
+  catch { return false; }
+}
+
+/* ------------------------------------------------------------------ */
+/*  أيقونات SVG بسيطة                                                 */
+/* ------------------------------------------------------------------ */
+const ICONS = {
+  calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  check: '<polyline points="20 6 9 17 4 12"/>',
+  checkCircle: '<circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/>',
+  circle: '<circle cx="12" cy="12" r="9"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  cap: '<path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12.5V17c0 1.5 3 3 6 3s6-1.5 6-3v-4.5"/>',
+  lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2 6 12 13 22 6"/>',
+  wa: '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"/>',
+  phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 2 .6 2.9a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.5 2.9.6a2 2 0 0 1 1.8 2.1Z"/>',
+  plus: '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  sparkles: '<path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2Z"/>',
+  trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>',
+  userPlus: '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/>',
+  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  wallet: '<path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5"/><path d="M16 12h5v4h-5a2 2 0 0 1 0-4Z"/>',
+  dashboard: '<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>',
+  chevronLeft: '<polyline points="15 18 9 12 15 6"/>',
+  video: '<polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>',
+};
+function icon(name, size, cls) {
+  return `<svg width="${size||18}" height="${size||18}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${cls||''}" style="flex-shrink:0">${ICONS[name]||""}</svg>`;
+}
+
+function logoHtml(sizePx) {
+  return `<span style="display:inline-flex;align-items:center;gap:10px">
+    <span class="logo-orn disp" style="font-size:${sizePx*0.5}px">﴾</span>
+    <span style="display:inline-block">
+      <span class="logo-text disp" style="font-size:${sizePx}px;font-weight:700">زدنـي</span>
+    </span>
+    <span class="logo-orn disp" style="font-size:${sizePx*0.5}px">﴿</span>
+  </span>`;
+}
+
+/* ------------------------------------------------------------------ */
+/*  الحالة العامة                                                     */
+/* ------------------------------------------------------------------ */
+const STATE = {
+  page: "home", // home | register | dashboardLogin | dashboard
+  dashTab: "overview",
+  regs: storGet("registrations", []),
+  groups: storGet("groups", DEFAULT_GROUPS),
+  settings: Object.assign({ email: "", passcode: DEFAULT_PASSCODE, scriptUrl: "", zoomLink: "" }, storGet("settings", {})),
+  regFilter: "all",
+  registeredEntry: null, // last successful registration, for confirmation screen
+};
+
+function go(page) { STATE.page = page; render(); window.scrollTo(0,0); }
+
+/* ------------------------------------------------------------------ */
+/*  أقسام الصفحة الرئيسية                                             */
+/* ------------------------------------------------------------------ */
+function heroHtml() {
+  return `
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="badge">${icon("sparkles",14)} تحضير بكالوريا — لغة عربية وآدابها</span><br/>
+      ${logoHtml(64)}
+      <p class="lead">حصص في اللغة العربية وآدابها مع <b>${TEACHER_NAME}</b>،
+      خاصة بتلاميذ <b>الأقسام النهائية</b> المقبلين على شهادة البكالوريا
+      في جميع الشعب: آداب وفلسفة، لغات أجنبية، علوم تجريبية، وتسيير واقتصاد.</p>
+      <div class="hero-actions">
+        <button class="btn btn-gold" id="btn-hero-register">${icon("userPlus",18)} سجّل الآن</button>
+        ${STATE.settings.zoomLink ? `<a class="btn" style="background:#2D8CFF;color:#fff" target="_blank" rel="noopener noreferrer" href="${esc(STATE.settings.zoomLink)}">${icon("video",18)} الانضمام للحصة عبر Zoom</a>` : ""}
+        <a class="btn btn-outline" style="color:#F5EDDD;border-color:rgba(227,214,184,.4)" target="_blank" rel="noopener noreferrer"
+           href="${waLink(WHATSAPP_NUMBER, `مرحباً ${TEACHER_NAME}، أود الاستفسار عن حصص اللغة العربية.`)}">${icon("wa",18)} راسلنا عبر واتساب</a>
+      </div>
+    </div>
+  </section>`;
+}
+
+function aboutHtml() {
+  return `
+  <section class="wrap about">
+    <div class="avatar">${icon("cap",38,"")}</div>
+    <div>
+      <h2 class="disp" style="margin:0 0 8px">${TEACHER_NAME}</h2>
+      <p>أستاذ اللغة العربية وآدابها، متخصّص في تحضير تلاميذ الأقسام النهائية لشهادة البكالوريا
+      في جميع الشعب: آداب وفلسفة، لغات أجنبية، علوم تجريبية، وتسيير واقتصاد.
+      يرافق طلبته في إتقان النحو والصرف والبلاغة وتحليل النصوص الأدبية، ويهيّئهم لمواجهة الامتحان
+      بثقة ومنهجية واضحة تراعي خصوصية كل شعبة.</p>
+    </div>
+  </section>`;
+}
+
+function stepsHtml() {
+  const steps = [
+    { n: "01", t: "اختر فوجك", d: "حدّد شعبتك والتوقيت المناسب لك من الأفواج المتاحة." },
+    { n: "02", t: "أكمل التسجيل", d: "املأ بياناتك في استمارة التسجيل خلال دقيقة واحدة." },
+    { n: "03", t: "تأكيد الالتحاق", d: "يصلك تأكيد من الأستاذ عبر واتساب أو البريد الإلكتروني." },
+  ];
+  return `
+  <section class="steps-sec">
+    <div class="wrap">
+      <h2 class="disp center" style="margin:0">كيف تلتحق بالحصص</h2>
+      <div class="steps-grid">
+        ${steps.map(s => `<div><div class="step-n disp">${s.n}</div><div class="step-t">${s.t}</div><div class="step-d">${s.d}</div></div>`).join("")}
+      </div>
+    </div>
+  </section>`;
+}
+
+function groupsPreviewHtml() {
+  return `
+  <section class="wrap groups-sec">
+    <h2 class="disp center" style="margin:0 0 4px">الأفواج والتوقيت</h2>
+    <p class="center muted">اختر فوج شعبتك في البكالوريا والتوقيت الذي يناسبك</p>
+    <div class="groups-grid">
+      ${STATE.groups.map(g => `
+        <div class="g-card">
+          <h3>${esc(g.name)}</h3>
+          <div class="sub">${esc(g.subject)}</div>
+          <div class="g-line">${icon("calendar",15)} ${esc(g.day)}</div>
+          <div class="g-line">${icon("clock",15)} ${esc(g.time)}</div>
+        </div>`).join("")}
+    </div>
+    <div class="center" style="margin-top:34px">
+      <button class="btn btn-dark" id="btn-groups-register">سجّل في أحد الأفواج ${icon("chevronLeft",18)}</button>
+    </div>
+  </section>`;
+}
+
+function footerHtml() {
+  return `
+  <footer class="foot">
+    <div class="foot-inner">
+      ${logoHtml(24)}
+      <div class="foot-links">
+        <a target="_blank" rel="noopener noreferrer" href="${waLink(WHATSAPP_NUMBER, `مرحباً ${TEACHER_NAME}`)}">${icon("wa",16)} واتساب</a>
+        ${STATE.settings.zoomLink ? `<a target="_blank" rel="noopener noreferrer" href="${esc(STATE.settings.zoomLink)}">${icon("video",16)} Zoom</a>` : ""}
+        ${STATE.settings.email ? `<a href="mailto:${esc(STATE.settings.email)}">${icon("mail",16)} بريد إلكتروني</a>` : ""}
+        <button id="btn-foot-dash">${icon("lock",14)} فضاء الأستاذ</button>
+      </div>
+    </div>
+  </footer>`;
+}
+
+/* ------------------------------------------------------------------ */
+/*  استمارة التسجيل                                                   */
+/* ------------------------------------------------------------------ */
+function registerPageHtml() {
+  if (STATE.registeredEntry) {
+    const entry = STATE.registeredEntry;
+    const group = STATE.groups.find(g => g.id === entry.groupId);
+    const msg = `مرحباً ${TEACHER_NAME}، أرغب في التسجيل في حصصكم.\nالاسم: ${entry.name}\nالهاتف: ${entry.phone}\nالفوج: ${group ? group.name : ""}${entry.note ? `\nملاحظة: ${entry.note}` : ""}`;
+    return `
+    <section class="reg-page done">
+      <div class="done-icon">${icon("checkCircle",28)}</div>
+      <h2 class="disp" style="margin:0 0 8px">تم استلام تسجيلك</h2>
+      <p class="muted" style="line-height:1.9">سُجّل طلبك في «${esc(group ? group.name : "")}». لتأكيد الحجز مباشرة، يمكنك إرسال بياناتك إلى الأستاذ عبر إحدى الوسيلتين:</p>
+      <div class="success-actions">
+        <a class="btn btn-wa" target="_blank" rel="noopener noreferrer" href="${waLink(WHATSAPP_NUMBER, msg)}">${icon("wa",18)} إرسال عبر واتساب</a>
+        ${STATE.settings.email ? `<a class="btn btn-outline" href="mailto:${esc(STATE.settings.email)}?subject=${encodeURIComponent("طلب تسجيل - منصة زدني")}&body=${encodeURIComponent(msg)}">${icon("mail",18)} إرسال عبر البريد الإلكتروني</a>` : ""}
+      </div>
+      <button class="back-link" id="btn-back-home">العودة إلى الصفحة الرئيسية</button>
+    </section>`;
+  }
+
+  return `
+  <section class="reg-page">
+    <h2 class="disp center" style="margin:0 0 4px">استمارة التسجيل</h2>
+    <p class="center muted" style="margin-bottom:26px">خطوة واحدة تفصلك عن الالتحاق بحصص ${TEACHER_NAME} — خاصة بالأقسام النهائية</p>
+    <form id="form-register" class="card">
+      <label class="field"><span>الاسم الكامل</span><input required name="name" placeholder="مثال: أمينة بلعباس" /></label>
+      <label class="field"><span>رقم الهاتف</span><input required name="phone" placeholder="0555 XX XX XX" dir="ltr" /></label>
+      <label class="field"><span>الشعبة / الفوج</span>
+        <select required name="groupId">
+          ${STATE.groups.map(g => `<option value="${g.id}">${esc(g.name)} — ${esc(g.day)} ${esc(g.time)}</option>`).join("")}
+        </select>
+      </label>
+      <label class="field"><span>ملاحظة (اختياري)</span><textarea name="note" rows="3" placeholder="أي معلومة إضافية تودّ إخبار الأستاذ بها"></textarea></label>
+      <button type="submit" class="btn btn-dark" style="width:100%;justify-content:center">تأكيد التسجيل</button>
+    </form>
+  </section>`;
+}
+
+/* ------------------------------------------------------------------ */
+/*  فضاء الأستاذ — الدخول                                             */
+/* ------------------------------------------------------------------ */
+function dashboardLoginHtml(errMsg) {
+  return `
+  <section class="login-page">
+    <div class="lock-circle">${icon("lock",22)}</div>
+    <h2 class="disp" style="margin:0 0 4px">دخول الأستاذ</h2>
+    <p class="muted" style="font-size:.9rem">هذا الفضاء مخصص لـ${TEACHER_NAME} فقط</p>
+    <form id="form-login">
+      <input type="password" name="passcode" placeholder="رمز الدخول" dir="ltr" />
+      ${errMsg ? `<p class="err">رمز الدخول غير صحيح</p>` : ""}
+      <button type="submit" class="btn btn-dark" style="width:100%;justify-content:center">دخول</button>
+    </form>
+    <p class="hint">الرمز الافتراضي: ${DEFAULT_PASSCODE} — يمكن تغييره من الإعدادات</p>
+  </section>`;
+}
+
+/* ------------------------------------------------------------------ */
+/*  فضاء الأستاذ — لوحة التحكم                                        */
+/* ------------------------------------------------------------------ */
+function dashboardHtml() {
+  const weekAgo = Date.now() - 7*24*60*60*1000;
+  const thisWeek = STATE.regs.filter(r => new Date(r.createdAt).getTime() >= weekAgo).length;
+  const unpaid = STATE.regs.filter(r => !r.paid).length;
+
+  const tabs = [
+    { id: "overview", label: "نظرة عامة", ic: "dashboard" },
+    { id: "regs", label: "التسجيلات والمستحقات", ic: "users" },
+    { id: "groups", label: "الأفواج والتوقيت", ic: "calendar" },
+    { id: "settings", label: "الإعدادات", ic: "settings" },
+  ];
+
+  let body = "";
+  if (STATE.dashTab === "overview") {
+    body = `<div class="stats-grid">
+      ${statCard("users", "إجمالي المسجلين", STATE.regs.length)}
+      ${statCard("calendar", "عدد الأفواج", STATE.groups.length)}
+      ${statCard("userPlus", "تسجيلات هذا الأسبوع", thisWeek)}
+      ${statCard("wallet", "مستحقات غير مسدَّدة", unpaid)}
+    </div>`;
+  } else if (STATE.dashTab === "regs") {
+    body = regsTableHtml();
+  } else if (STATE.dashTab === "groups") {
+    body = groupsManagerHtml();
+  } else if (STATE.dashTab === "settings") {
+    body = settingsPanelHtml();
+  }
+
+  return `
+  <section class="dash">
+    <div class="dash-head">
+      <div>
+        <h2 class="disp" style="margin:0">فضاء الأستاذ</h2>
+        <p class="muted" style="margin:4px 0 0;font-size:.9rem">مرحباً ${TEACHER_NAME}</p>
+      </div>
+      <button class="back-link" id="btn-dash-home">خروج إلى الصفحة الرئيسية</button>
+    </div>
+    <div class="tabs">
+      ${tabs.map(t => `<button class="tab-btn ${STATE.dashTab===t.id?"active":""}" data-tab="${t.id}">${icon(t.ic,15)} ${t.label}</button>`).join("")}
+    </div>
+    <div id="dash-body">${body}</div>
+  </section>`;
+}
+
+function statCard(ic, label, value) {
+  return `<div class="stat-card"><div class="stat-icon">${icon(ic,20,"")}</div><div><div class="stat-val">${value}</div><div class="stat-lbl">${label}</div></div></div>`;
+}
+
+function regsTableHtml() {
+  const filters = [{id:"all",l:"الكل"},{id:"unpaid",l:"غير مسدَّدة"},{id:"paid",l:"مسدَّدة"}];
+  let list = STATE.regs;
+  if (STATE.regFilter === "paid") list = list.filter(r => r.paid);
+  if (STATE.regFilter === "unpaid") list = list.filter(r => !r.paid);
+  list = [...list].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  const groupName = (id) => { const g = STATE.groups.find(g => g.id === id); return g ? g.name : "—"; };
+
+  return `
+  <div class="filters">
+    ${filters.map(f => `<button class="filter-btn ${STATE.regFilter===f.id?"active":""}" data-filter="${f.id}">${f.l}</button>`).join("")}
+  </div>
+  ${list.length === 0 ? `<div class="empty">لا توجد تسجيلات بعد. عندما يسجّل طالب، ستظهر بياناته هنا مباشرة.</div>` : list.map(r => `
+    <div class="reg-row">
+      <div class="flex1"><div class="reg-name">${esc(r.name)}</div><div class="reg-phone">${icon("phone",13)} ${esc(r.phone)}</div></div>
+      <div class="reg-group">${esc(groupName(r.groupId))}</div>
+      <div class="reg-date">${new Date(r.createdAt).toLocaleDateString("ar-DZ")}</div>
+      <button class="pill ${r.paid?"paid":"unpaid"}" data-toggle-paid="${r.id}">${icon(r.paid?"checkCircle":"circle",15)} ${r.paid?"مسدَّدة":"غير مسدَّدة"}</button>
+      <a class="icon-btn icon-wa" title="تذكير عبر واتساب" target="_blank" rel="noopener noreferrer"
+        href="${waLink(r.phone.replace(/[^0-9]/g,""), r.paid ? `مرحباً ${r.name}، هذا تأكيد استلام مستحقات حصصك، شكراً لك.` : `مرحباً ${r.name}، تذكير ودّي بخصوص مستحقات حصص هذا الشهر. شكراً لتفهّمك.`)}">${icon("wa",19)}</a>
+      <button class="icon-btn icon-trash" title="حذف" data-remove-reg="${r.id}">${icon("trash",17)}</button>
+    </div>`).join("")}`;
+}
+
+function groupsManagerHtml() {
+  const days = ["السبت","الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة"];
+  return `
+  <div>
+    ${STATE.groups.map(g => `
+      <div class="g-manage-row">
+        <div class="flex1"><div class="reg-name">${esc(g.name)}</div><div class="muted" style="font-size:.88rem">${esc(g.subject)}</div></div>
+        <div class="g-line">${icon("calendar",14)} ${esc(g.day)}</div>
+        <div class="g-line">${icon("clock",14)} ${esc(g.time)}</div>
+        <div style="font-size:.9rem">سعة: ${g.capacity}</div>
+        <button class="icon-btn icon-trash" data-remove-group="${g.id}">${icon("trash",17)}</button>
+      </div>`).join("")}
+  </div>
+  <form id="form-add-group" class="g-form" style="margin-top:10px">
+    <label class="field"><span>اسم الفوج</span><input name="name" placeholder="فوج آداب وفلسفة" /></label>
+    <label class="field"><span>المادة/المحور</span><input name="subject" placeholder="تحضير بكالوريا" /></label>
+    <label class="field"><span>اليوم</span><select name="day">${days.map(d=>`<option value="${d}">${d}</option>`).join("")}</select></label>
+    <label class="field"><span>التوقيت</span><input name="time" placeholder="16:00 - 17:30" dir="ltr" /></label>
+    <label class="field"><span>السعة القصوى</span><input type="number" name="capacity" min="1" value="15" /></label>
+    <div style="display:flex;align-items:flex-end">
+      <button type="submit" class="btn btn-dark" style="width:100%;justify-content:center">${icon("plus",17)} إضافة فوج</button>
+    </div>
+  </form>`;
+}
+
+function settingsPanelHtml() {
+  return `
+  <div class="settings-grid">
+    <form id="form-settings-email" class="card">
+      <h3 style="margin:0 0 6px">بيانات التواصل</h3>
+      <label class="field"><span>البريد الإلكتروني لاستقبال طلبات التسجيل</span>
+        <input type="email" name="email" value="${esc(STATE.settings.email)}" placeholder="example@gmail.com" dir="ltr" />
+      </label>
+      <p class="hint" style="margin:-6px 0 12px">رقم الواتساب الظاهر للطلبة: 0671143821 (مضبوط مسبقاً)</p>
+      <label class="field"><span>رابط اجتماع Zoom (اختياري — يظهر زر "الانضمام" للطلبة)</span>
+        <input type="url" name="zoomLink" value="${esc(STATE.settings.zoomLink || "")}" placeholder="https://zoom.us/j/..." dir="ltr" />
+      </label>
+      <label class="field"><span>رابط ربط Google Sheets (لتسجيل تلقائي وبريد فوري)</span>
+        <input type="url" name="scriptUrl" value="${esc(STATE.settings.scriptUrl || "")}" placeholder="https://script.google.com/macros/s/.../exec" dir="ltr" />
+      </label>
+      <button type="submit" class="btn btn-dark">حفظ</button>
+      <div id="email-saved-msg"></div>
+    </form>
+    <form id="form-settings-pass" class="card">
+      <h3 style="margin:0 0 6px">تغيير رمز دخول فضاء الأستاذ</h3>
+      <label class="field"><span>الرمز الجديد</span><input type="password" name="pass1" dir="ltr" /></label>
+      <label class="field"><span>تأكيد الرمز الجديد</span><input type="password" name="pass2" dir="ltr" /></label>
+      <button type="submit" class="btn btn-dark">تحديث الرمز</button>
+      <div id="pass-msg"></div>
+    </form>
+    <div class="settings-note">
+      ملاحظة: هذه النسخة تحفظ التسجيلات محلياً في هذا المتصفح دائماً كنسخة احتياطية. إذا ضبطت "رابط ربط Google Sheets" أعلاه، سيُرسل كل تسجيل جديد أيضاً إلى جدول Google Sheets (يفتحه الأستاذ من أي جهاز) مع بريد إلكتروني تلقائي فوري — راجع تعليمات الإعداد التي أرسلها لك المساعد.
+    </div>
+  </div>`;
+}
+
+/* ------------------------------------------------------------------ */
+/*  الترسيم والأحداث                                                  */
+/* ------------------------------------------------------------------ */
+function render() {
+  let pageHtml = "";
+  if (STATE.page === "home") {
+    pageHtml = heroHtml() + aboutHtml() + stepsHtml() + groupsPreviewHtml();
+  } else if (STATE.page === "register") {
+    pageHtml = registerPageHtml();
+  } else if (STATE.page === "dashboardLogin") {
+    pageHtml = dashboardLoginHtml(STATE._loginErr);
+  } else if (STATE.page === "dashboard") {
+    pageHtml = dashboardHtml();
+  }
+
+  document.getElementById("root").innerHTML = `
+    <nav class="top">
+      <button id="btn-nav-logo" style="background:none;border:none;cursor:pointer">${logoHtml(22)}</button>
+      <div class="navlinks">
+        <button id="btn-nav-register">التسجيل</button>
+        <button id="btn-nav-dash">${icon("lock",13)} فضاء الأستاذ</button>
+      </div>
+    </nav>
+    ${pageHtml}
+    ${footerHtml()}
+  `;
+
+  attachHandlers();
+}
+
+function attachHandlers() {
+  const $ = (id) => document.getElementById(id);
+
+  if ($("btn-nav-logo")) $("btn-nav-logo").onclick = () => go("home");
+  if ($("btn-nav-register")) $("btn-nav-register").onclick = () => go("register");
+  if ($("btn-nav-dash")) $("btn-nav-dash").onclick = () => go(STATE.page === "dashboard" ? "dashboard" : "dashboardLogin");
+  if ($("btn-foot-dash")) $("btn-foot-dash").onclick = () => go(STATE.page === "dashboard" ? "dashboard" : "dashboardLogin");
+  if ($("btn-hero-register")) $("btn-hero-register").onclick = () => go("register");
+  if ($("btn-groups-register")) $("btn-groups-register").onclick = () => go("register");
+  if ($("btn-back-home")) $("btn-back-home").onclick = () => { STATE.registeredEntry = null; go("home"); };
+  if ($("btn-dash-home")) $("btn-dash-home").onclick = () => go("home");
+
+  if ($("form-register")) {
+    $("form-register").onsubmit = (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const entry = {
+        id: uid(),
+        name: f.name.value.trim(),
+        phone: f.phone.value.trim(),
+        groupId: f.groupId.value,
+        note: f.note.value.trim(),
+        paid: false,
+        createdAt: new Date().toISOString(),
+      };
+      if (!entry.name || !entry.phone || !entry.groupId) return;
+      STATE.regs.push(entry);
+      storSet("registrations", STATE.regs);
+      const grp = STATE.groups.find(g => g.id === entry.groupId);
+      notifyBackend(entry, grp ? grp.name : "");
+      STATE.registeredEntry = entry;
+      render();
+      window.scrollTo(0,0);
+    };
+  }
+
+  if ($("form-login")) {
+    $("form-login").onsubmit = (e) => {
+      e.preventDefault();
+      const val = e.target.passcode.value;
+      if (val === (STATE.settings.passcode || DEFAULT_PASSCODE)) {
+        STATE._loginErr = false;
+        go("dashboard");
+      } else {
+        STATE._loginErr = true;
+        render();
+      }
+    };
+  }
+
+  document.querySelectorAll("[data-tab]").forEach(btn => {
+    btn.onclick = () => { STATE.dashTab = btn.getAttribute("data-tab"); render(); };
+  });
+  document.querySelectorAll("[data-filter]").forEach(btn => {
+    btn.onclick = () => { STATE.regFilter = btn.getAttribute("data-filter"); render(); };
+  });
+  document.querySelectorAll("[data-toggle-paid]").forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute("data-toggle-paid");
+      STATE.regs = STATE.regs.map(r => r.id === id ? { ...r, paid: !r.paid } : r);
+      storSet("registrations", STATE.regs);
+      render();
+    };
+  });
+  document.querySelectorAll("[data-remove-reg]").forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute("data-remove-reg");
+      STATE.regs = STATE.regs.filter(r => r.id !== id);
+      storSet("registrations", STATE.regs);
+      render();
+    };
+  });
+  document.querySelectorAll("[data-remove-group]").forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute("data-remove-group");
+      STATE.groups = STATE.groups.filter(g => g.id !== id);
+      storSet("groups", STATE.groups);
+      render();
+    };
+  });
+
+  if ($("form-add-group")) {
+    $("form-add-group").onsubmit = (e) => {
+      e.preventDefault();
+      const f = e.target;
+      if (!f.name.value.trim() || !f.time.value.trim()) return;
+      STATE.groups.push({
+        id: uid(), name: f.name.value.trim(), subject: f.subject.value.trim(),
+        day: f.day.value, time: f.time.value.trim(), capacity: Number(f.capacity.value) || 15,
+      });
+      storSet("groups", STATE.groups);
+      render();
+    };
+  }
+
+  if ($("form-settings-email")) {
+    $("form-settings-email").onsubmit = (e) => {
+      e.preventDefault();
+      STATE.settings.email = e.target.email.value.trim();
+      STATE.settings.zoomLink = e.target.zoomLink.value.trim();
+      STATE.settings.scriptUrl = e.target.scriptUrl.value.trim();
+      storSet("settings", STATE.settings);
+      $("email-saved-msg").innerHTML = `<div class="ok-msg">${icon("check",15)} تم الحفظ</div>`;
+      setTimeout(() => { if ($("email-saved-msg")) $("email-saved-msg").innerHTML = ""; }, 2500);
+    };
+  }
+  if ($("form-settings-pass")) {
+    $("form-settings-pass").onsubmit = (e) => {
+      e.preventDefault();
+      const p1 = e.target.pass1.value, p2 = e.target.pass2.value;
+      const msgEl = $("pass-msg");
+      if (!p1.trim() || p1 !== p2) { msgEl.innerHTML = `<p class="err">تأكد من تطابق الرمز الجديد في الحقلين</p>`; return; }
+      STATE.settings.passcode = p1;
+      storSet("settings", STATE.settings);
+      msgEl.innerHTML = `<p class="muted" style="font-size:.85rem">تم تحديث رمز الدخول</p>`;
+      e.target.reset();
+      setTimeout(() => { if (msgEl) msgEl.innerHTML = ""; }, 2500);
+    };
+  }
+}
+
+render();
+</script>
+</body>
+</html>
