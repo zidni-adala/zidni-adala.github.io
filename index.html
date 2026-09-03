@@ -489,4 +489,491 @@ function embedForLesson_(l) {
   if (ytMatch) {
     return `<iframe src="https://www.youtube.com/embed/${ytMatch[1]}" style="width:100%;height:480px;border:0;border-radius:12px" allowfullscreen></iframe>`;
   }
-  return `<a class="btn btn-outline" target="_blank" rel="noopener noreferrer" href="${esc(l.url)}">${icon("video",16)} فتح الدرس</a><p class="hint">تنبيه: هذا الرابط لا يخضع لحماية "عرض فقط" داخل الموقع.</p>`;
+  return `<a class="btn btn-outline" target="_blank" rel="noopener noreferrer" href="${esc(l.url)}">${icon("video",16)} فتح الدرس</a><p class="hint">تنبيه: هذا الرابط لا يخضع لحماية "عرض فقط" داخل الموقع.</p>`;}
+
+function lessonsPageHtml() {
+  if (!STATE.lessonsAccess) {
+    return `
+    <section class="login-page">
+      <div class="lock-circle">${icon("video",22)}</div>
+      <h2 class="disp" style="margin:0 0 4px">فضاء الدروس</h2>
+      <p class="muted" style="font-size:.9rem">أدخل رمز الدخول الذي أعطاك إياه الأستاذ عند تأكيد الاشتراك</p>
+      <form id="form-lessons-code">
+        <input name="code" placeholder="رمز الدخول" style="text-align:center;letter-spacing:3px;font-weight:800" maxlength="6" />
+        ${STATE.lessonsVerifyMsg ? `<p class="err">${esc(STATE.lessonsVerifyMsg)}</p>` : ""}
+        <button type="submit" class="btn btn-dark" style="width:100%;justify-content:center">دخول</button>
+      </form>
+      <p class="hint">الرمز خاص بجهازك الأول فقط — لن يعمل من جهاز آخر.</p>
+    </section>`;
+  }
+
+  const listHtml = STATE.lessonsStatus === "loading"
+    ? `<div class="empty">جارٍ تحميل الدروس...</div>`
+    : STATE.remoteLessons.length === 0
+      ? `<div class="empty">لا توجد دروس منشورة بعد.</div>`
+      : STATE.remoteLessons.map(l => `
+        <div class="card" style="margin-bottom:16px">
+          <h3 style="margin:0 0 10px">${esc(l.title)}</h3>
+          ${embedForLesson_(l)}
+        </div>`).join("");
+
+  return `
+  <section class="wrap" style="padding:40px 22px">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:20px">
+      <h2 class="disp" style="margin:0">فضاء الدروس</h2>
+      <button class="back-link" id="btn-lessons-logout">خروج من هذا الجهاز</button>
+    </div>
+    ${listHtml}
+  </section>`;
+}
+
+/* ------------------------------------------------------------------ */
+/*  فضاء الأستاذ — لوحة التحكم                                        */
+/* ------------------------------------------------------------------ */
+function dashboardHtml() {
+  const usingRemote = STATE.remoteStatus === "ok";
+  const rosterSrc = usingRemote ? STATE.remoteRegs : STATE.regs;
+  const withSub = rosterSrc.map(r => ({ ...r, paidUntil: (STATE.subscriptions[r.phone]&&STATE.subscriptions[r.phone].paidUntil)||"" }));
+  const weekAgo = Date.now() - 7*24*60*60*1000;
+  const thisWeek = withSub.filter(r => new Date(r.createdAt).getTime() >= weekAgo).length;
+  const expired = withSub.filter(r => !isActive(r)).length;
+
+  const tabs = [
+    { id: "overview", label: "نظرة عامة", ic: "dashboard" },
+    { id: "regs", label: "التسجيلات والمستحقات", ic: "users" },
+    { id: "groups", label: "الأفواج والتوقيت", ic: "calendar" },
+    { id: "lessons", label: "الدروس", ic: "video" },
+    { id: "settings", label: "الإعدادات", ic: "settings" },
+  ];
+
+  let body = "";
+  if (STATE.dashTab === "overview") {
+    body = `<div class="stats-grid">
+      ${statCard("users", "إجمالي المسجلين", withSub.length)}
+      ${statCard("calendar", "عدد الأفواج", STATE.groups.length)}
+      ${statCard("userPlus", "تسجيلات هذا الأسبوع", thisWeek)}
+      ${statCard("wallet", "اشتراكات منتهية/غير مفعّلة", expired)}
+    </div>`;
+  } else if (STATE.dashTab === "regs") {
+    body = regsTableHtml();
+  } else if (STATE.dashTab === "groups") {
+    body = groupsManagerHtml();
+  } else if (STATE.dashTab === "lessons") {
+    body = lessonsManagerHtml();
+  } else if (STATE.dashTab === "settings") {
+    body = settingsPanelHtml();
+  }
+
+  return `
+  <section class="dash">
+    <div class="dash-head">
+      <div>
+        <h2 class="disp" style="margin:0">فضاء الأستاذ</h2>
+        <p class="muted" style="margin:4px 0 0;font-size:.9rem">مرحباً ${TEACHER_NAME}</p>
+      </div>
+      <button class="back-link" id="btn-dash-home">خروج إلى الصفحة الرئيسية</button>
+    </div>
+    <a class="btn btn-dark" style="margin-bottom:20px" target="_blank" rel="noopener noreferrer" href="${SHEET_VIEW_URL}">${icon("calendar",17)} فتح جدول كل التسجيلات (Google Sheets)</a>
+    <div class="tabs">
+      ${tabs.map(t => `<button class="tab-btn ${STATE.dashTab===t.id?"active":""}" data-tab="${t.id}">${icon(t.ic,15)} ${t.label}</button>`).join("")}
+    </div>
+    <div id="dash-body">${body}</div>
+  </section>`;
+}
+
+function statCard(ic, label, value) {
+  return `<div class="stat-card"><div class="stat-icon">${icon(ic,20,"")}</div><div><div class="stat-val">${value}</div><div class="stat-lbl">${label}</div></div></div>`;
+}
+
+function regsTableHtml() {
+  const filters = [{id:"all",l:"الكل"},{id:"unpaid",l:"منتهية/غير مفعّلة"},{id:"paid",l:"نشطة"}];
+
+  const usingRemote = STATE.remoteStatus === "ok";
+  let source = usingRemote
+    ? STATE.remoteRegs.map(r => ({ ...r, id: r.phone }))
+    : STATE.regs.map(r => {
+        const g = STATE.groups.find(g => g.id === r.groupId);
+        return { ...r, id: r.phone || r.id, groupName: g ? g.name : "—" };
+      });
+
+  const withSub = source.map(r => ({
+    ...r,
+    paidUntil: (STATE.subscriptions[r.phone] && STATE.subscriptions[r.phone].paidUntil) || "",
+    lastPaymentDate: (STATE.subscriptions[r.phone] && STATE.subscriptions[r.phone].lastPaymentDate) || "",
+  }));
+
+  let list = withSub;
+  if (STATE.regFilter === "paid") list = list.filter(r => isActive(r));
+  if (STATE.regFilter === "unpaid") list = list.filter(r => !isActive(r));
+  list = [...list].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  const statusBanner = STATE.remoteStatus === "loading"
+    ? `<div class="empty">جارٍ التحميل من جدول Google Sheets...</div>`
+    : STATE.remoteStatus === "error"
+      ? `<div class="settings-note" style="margin-bottom:16px">تعذّر الاتصال بجدول Google Sheets الآن (تحقّق من الاتصال بالإنترنت أو اضغط "تحديث"). تُعرض حالياً فقط التسجيلات المحفوظة على هذا الجهاز.</div>`
+      : "";
+
+  return `
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+    <div class="filters" style="margin-bottom:0">
+      ${filters.map(f => `<button class="filter-btn ${STATE.regFilter===f.id?"active":""}" data-filter="${f.id}">${f.l}</button>`).join("")}
+    </div>
+    <button class="btn btn-outline" style="padding:7px 14px;font-size:.85rem" id="btn-refresh-regs">${icon("calendar",14)} تحديث من الجدول</button>
+  </div>
+  ${statusBanner}
+  ${list.length === 0 ? `<div class="empty">لا توجد تسجيلات بعد. عندما يسجّل طالب، ستظهر بياناته هنا مباشرة.</div>` : list.map(r => {
+    const active = isActive(r);
+    const statusLabel = r.paidUntil ? (active ? `نشط حتى ${fmtDateAr(r.paidUntil)}` : `منتهي منذ ${fmtDateAr(r.paidUntil)}`) : "لم يُفعَّل بعد";
+    const codeInfo = STATE.remoteCodes[r.phone];
+    const codeHtml = codeInfo && codeInfo.active
+      ? `<span class="pill paid" title="${codeInfo.bound ? 'مرتبط بجهاز الطالب' : 'لم يُستعمل بعد'}">${icon("lock",13)} ${esc(codeInfo.code)}</span>
+         <button class="icon-btn icon-trash" title="إلغاء الرمز" data-revoke-code="${esc(r.phone)}">${icon("trash",15)}</button>`
+      : `<button class="icon-btn icon-renew" title="توليد رمز دخول للدروس" data-issue-code="${esc(r.phone)}" data-issue-name="${esc(r.name)}">${icon("video",15)} رمز الدروس</button>`;
+    return `
+    <div class="reg-row">
+      <div class="flex1"><div class="reg-name">${esc(r.name)}</div><div class="reg-phone">${icon("phone",13)} ${esc(r.phone)}</div></div>
+      <div class="reg-group">${esc(r.groupName || "—")}<br/><span class="muted" style="font-size:.78rem">${esc(r.institution||"")}${r.institution?" — ":""}${esc(r.commune||"")}${r.commune?"، ":""}${esc(r.wilaya||"")}</span></div>
+      <div class="reg-date">سُجّل: ${new Date(r.createdAt).toLocaleDateString("ar-DZ")}</div>
+      <span class="pill ${active?"paid":"unpaid"}">${icon(active?"checkCircle":"circle",15)} ${statusLabel}</span>
+      <label class="sub-date"><span>آخر تسديد</span><input type="date" data-payment-date="${esc(r.phone)}" value="${r.lastPaymentDate||""}" /></label>
+      <label class="sub-date"><span>صالح حتى</span><input type="date" data-paid-until="${esc(r.phone)}" value="${r.paidUntil||""}" /></label>
+      <button class="icon-btn icon-renew" title="تجديد شهر من اليوم" data-renew="${esc(r.phone)}">${icon("plus",17)} شهر</button>
+      ${codeHtml}
+      <a class="icon-btn icon-wa" title="تذكير عبر واتساب" target="_blank" rel="noopener noreferrer"
+        href="${waLink(r.phone.replace(/[^0-9]/g,""), active ? `مرحباً ${r.name}، اشتراكك نشط حتى ${fmtDateAr(r.paidUntil)}.` : `مرحباً ${r.name}، تذكير ودّي بخصوص تجديد اشتراك حصصك. شكراً لتفهّمك.`)}">${icon("wa",19)}</a>
+    </div>`;
+  }).join("")}`;
+}
+
+function groupsManagerHtml() {
+  const days = ["السبت","الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة"];
+  return `
+  <div>
+    ${STATE.groups.map(g => `
+      <div class="g-manage-row">
+        <div class="flex1"><div class="reg-name">${esc(g.name)}</div><div class="muted" style="font-size:.88rem">${esc(g.subject)}</div></div>
+        <div class="g-line">${icon("calendar",14)} ${esc(g.day)}</div>
+        <div class="g-line">${icon("clock",14)} ${esc(g.time)}</div>
+        <div style="font-size:.9rem">سعة: ${g.capacity}</div>
+        <button class="icon-btn icon-trash" data-remove-group="${g.id}">${icon("trash",17)}</button>
+      </div>`).join("")}
+  </div>
+  <form id="form-add-group" class="g-form" style="margin-top:10px">
+    <label class="field"><span>اسم الفوج</span><input name="name" placeholder="فوج آداب وفلسفة" /></label>
+    <label class="field"><span>المادة/المحور</span><input name="subject" placeholder="تحضير بكالوريا" /></label>
+    <label class="field"><span>اليوم</span><select name="day">${days.map(d=>`<option value="${d}">${d}</option>`).join("")}</select></label>
+    <label class="field"><span>التوقيت</span><input name="time" placeholder="16:00 - 17:30" dir="ltr" /></label>
+    <label class="field"><span>السعة القصوى</span><input type="number" name="capacity" min="1" value="15" /></label>
+    <div style="display:flex;align-items:flex-end">
+      <button type="submit" class="btn btn-dark" style="width:100%;justify-content:center">${icon("plus",17)} إضافة فوج</button>
+    </div>
+  </form>`;
+}
+
+function lessonsManagerHtml() {
+  const statusBanner = STATE.lessonsStatus === "loading" ? `<div class="empty">جارٍ التحميل...</div>`
+    : STATE.lessonsStatus === "error" ? `<div class="settings-note" style="margin-bottom:16px">تعذّر الاتصال بالخادم.</div>` : "";
+
+  const list = STATE.remoteLessons.length === 0 ? `<div class="empty">لا توجد دروس بعد. أضف أول درس بالأسفل.</div>` :
+    STATE.remoteLessons.map(l => `
+      <div class="g-manage-row">
+        <div class="flex1"><div class="reg-name">${esc(l.title)}</div><div class="muted" style="font-size:.85rem">${l.type === "video" ? "فيديو" : "PDF"} — <span dir="ltr">${esc(l.url)}</span></div></div>
+        <button class="icon-btn icon-trash" data-remove-lesson data-lesson-title="${esc(l.title)}" data-lesson-url="${esc(l.url)}">${icon("trash",17)}</button>
+      </div>`).join("");
+
+  return `
+  <div>
+    <div class="settings-note" style="margin-bottom:16px">
+      ارفع ملف PDF أو فيديو على Google Drive، فعّل خيار "تقييد التنزيل/الطباعة/النسخ" من إعدادات مشاركة الملف في Drive، ثم الصق رابط المشاركة هنا. لروابط يوتيوب: استعمل فيديو "غير مُدرَج" (Unlisted).
+    </div>
+    ${statusBanner}
+    ${list}
+    <form id="form-add-lesson" class="g-form" style="margin-top:16px">
+      <label class="field"><span>عنوان الدرس</span><input name="title" placeholder="مثال: النحو — الدرس 1" /></label>
+      <label class="field"><span>النوع</span>
+        <select name="type"><option value="pdf">PDF</option><option value="video">فيديو</option></select>
+      </label>
+      <label class="field" style="grid-column:1/-1"><span>رابط Google Drive أو YouTube</span><input name="url" placeholder="https://drive.google.com/file/d/..." dir="ltr" /></label>
+      <div style="display:flex;align-items:flex-end;grid-column:1/-1">
+        <button type="submit" class="btn btn-dark" style="width:100%;justify-content:center">${icon("plus",17)} إضافة الدرس</button>
+      </div>
+    </form>
+  </div>`;
+}
+
+function settingsPanelHtml() {
+  return `
+  <div class="settings-grid">
+    <form id="form-settings-email" class="card">
+      <h3 style="margin:0 0 6px">بيانات التواصل</h3>
+      <label class="field"><span>البريد الإلكتروني لاستقبال طلبات التسجيل</span>
+        <input type="email" name="email" value="${esc(STATE.settings.email)}" placeholder="example@gmail.com" dir="ltr" />
+      </label>
+      <p class="hint" style="margin:-6px 0 12px">رقم الواتساب الظاهر للطلبة: 0671143821 (مضبوط مسبقاً)</p>
+      <label class="field"><span>رابط اجتماع Zoom (اختياري — يظهر زر "الانضمام" للطلبة)</span>
+        <input type="url" name="zoomLink" value="${esc(STATE.settings.zoomLink || "")}" placeholder="https://zoom.us/j/..." dir="ltr" />
+      </label>
+      <label class="field"><span>رابط ربط Google Sheets (لتسجيل تلقائي وبريد فوري)</span>
+        <input type="url" name="scriptUrl" value="${esc(STATE.settings.scriptUrl || "")}" placeholder="https://script.google.com/macros/s/.../exec" dir="ltr" />
+      </label>
+      <button type="submit" class="btn btn-dark">حفظ</button>
+      <div id="email-saved-msg"></div>
+    </form>
+    <form id="form-settings-pass" class="card">
+      <h3 style="margin:0 0 6px">تغيير رمز دخول فضاء الأستاذ</h3>
+      <label class="field"><span>الرمز الجديد</span><input type="password" name="pass1" dir="ltr" /></label>
+      <label class="field"><span>تأكيد الرمز الجديد</span><input type="password" name="pass2" dir="ltr" /></label>
+      <button type="submit" class="btn btn-dark">تحديث الرمز</button>
+      <div id="pass-msg"></div>
+    </form>
+    <div class="settings-note">
+      ملاحظة مهمة: قائمة "التسجيلات والمستحقات" في هذه الصفحة تعرض فقط التسجيلات التي تمت من *هذا الجهاز/المتصفح تحديداً* — وليست شاملة لكل الطلبة. المصدر الكامل والموثوق لكل التسجيلات (من جميع الطلبة، من أي جهاز) هو جدول Google Sheets نفسه — افتحه من تطبيق Sheets على الهاتف للاطّلاع على القائمة الكاملة دائماً.
+    </div>
+  </div>`;
+}
+
+/* ------------------------------------------------------------------ */
+/*  الترسيم والأحداث                                                  */
+/* ------------------------------------------------------------------ */
+function render() {
+  let pageHtml = "";
+  if (STATE.page === "home") {
+    pageHtml = heroHtml() + aboutHtml() + stepsHtml() + groupsPreviewHtml();
+  } else if (STATE.page === "register") {
+    pageHtml = registerPageHtml();
+  } else if (STATE.page === "dashboardLogin") {
+    pageHtml = dashboardLoginHtml(STATE._loginErr);
+  } else if (STATE.page === "dashboard") {
+    pageHtml = dashboardHtml();
+  } else if (STATE.page === "lessons") {
+    pageHtml = lessonsPageHtml();
+  }
+
+  document.getElementById("root").innerHTML = `
+    <nav class="top">
+      <button id="btn-nav-logo" style="background:none;border:none;cursor:pointer">${logoHtml(22)}</button>
+      <div class="navlinks">
+        <button id="btn-nav-register">التسجيل</button>
+        <button id="btn-nav-lessons">${icon("video",13)} الدروس</button>
+        <button id="btn-nav-dash">${icon("lock",13)} فضاء الأستاذ</button>
+      </div>
+    </nav>
+    ${pageHtml}
+    ${footerHtml()}
+  `;
+
+  attachHandlers();
+  if (STATE.page === "lessons" && STATE.lessonsAccess && STATE.lessonsStatus === "idle") fetchLessons();
+}
+
+function attachHandlers() {
+  const $ = (id) => document.getElementById(id);
+
+  if ($("btn-nav-logo")) $("btn-nav-logo").onclick = () => go("home");
+  if ($("btn-nav-register")) $("btn-nav-register").onclick = () => go("register");
+  if ($("btn-nav-lessons")) $("btn-nav-lessons").onclick = () => go("lessons");
+  if ($("btn-nav-dash")) $("btn-nav-dash").onclick = () => go(STATE.page === "dashboard" ? "dashboard" : "dashboardLogin");
+  if ($("btn-foot-dash")) $("btn-foot-dash").onclick = () => go(STATE.page === "dashboard" ? "dashboard" : "dashboardLogin");
+  if ($("btn-hero-register")) $("btn-hero-register").onclick = () => go("register");
+  if ($("btn-groups-register")) $("btn-groups-register").onclick = () => go("register");
+  if ($("btn-back-home")) $("btn-back-home").onclick = () => { STATE.registeredEntry = null; go("home"); };
+  if ($("btn-dash-home")) $("btn-dash-home").onclick = () => go("home");
+
+  if ($("form-register")) {
+    $("form-register").onsubmit = (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const entry = {
+        id: uid(),
+        name: f.name.value.trim(),
+        phone: f.phone.value.trim(),
+        groupId: f.groupId.value,
+        institution: f.institution.value.trim(),
+        wilaya: f.wilaya.value,
+        commune: f.commune.value.trim(),
+        note: f.note.value.trim(),
+        paidUntil: "",
+        lastPaymentDate: "",
+        createdAt: new Date().toISOString(),
+      };
+      if (!entry.name || !entry.phone || !entry.groupId || !entry.institution || !entry.wilaya || !entry.commune) return;
+      STATE.regs.push(entry);
+      storSet("registrations", STATE.regs);
+      const grp = STATE.groups.find(g => g.id === entry.groupId);
+      notifyBackend(entry, grp ? grp.name : "");
+      STATE.registeredEntry = entry;
+      render();
+      window.scrollTo(0,0);
+    };
+  }
+
+  if ($("form-login")) {
+    $("form-login").onsubmit = (e) => {
+      e.preventDefault();
+      const val = e.target.passcode.value;
+      if (val === (STATE.settings.passcode || DEFAULT_PASSCODE)) {
+        STATE._loginErr = false;
+        go("dashboard");
+        if (STATE.remoteStatus === "idle") fetchRemoteRegs();
+      } else {
+        STATE._loginErr = true;
+        render();
+      }
+    };
+  }
+
+  if ($("form-lessons-code")) {
+    $("form-lessons-code").onsubmit = (e) => {
+      e.preventDefault();
+      const code = e.target.code.value.trim();
+      if (!code) return;
+      verifyLessonsCode(code);
+    };
+  }
+  if ($("btn-lessons-logout")) {
+    $("btn-lessons-logout").onclick = () => {
+      STATE.lessonsAccess = null;
+      storSet("lessonsAccess", null);
+      go("home");
+    };
+  }
+
+  document.querySelectorAll("[data-tab]").forEach(btn => {
+    btn.onclick = () => {
+      STATE.dashTab = btn.getAttribute("data-tab");
+      render();
+      if (STATE.dashTab === "regs" && STATE.remoteStatus === "idle") fetchRemoteRegs();
+      if (STATE.dashTab === "lessons" && STATE.lessonsStatus === "idle") fetchLessons();
+    };
+  });
+  document.querySelectorAll("[data-filter]").forEach(btn => {
+    btn.onclick = () => { STATE.regFilter = btn.getAttribute("data-filter"); render(); };
+  });
+  if ($("btn-refresh-regs")) $("btn-refresh-regs").onclick = () => fetchRemoteRegs();
+
+  document.querySelectorAll("[data-renew]").forEach(btn => {
+    btn.onclick = () => {
+      const phone = btn.getAttribute("data-renew");
+      const current = STATE.subscriptions[phone] || {};
+      const base = (current.paidUntil && current.paidUntil >= todayISO()) ? current.paidUntil : todayISO();
+      STATE.subscriptions[phone] = { paidUntil: addMonthISO(base), lastPaymentDate: todayISO() };
+      storSet("subscriptions", STATE.subscriptions);
+      render();
+    };
+  });
+  document.querySelectorAll("[data-paid-until]").forEach(input => {
+    input.onchange = () => {
+      const phone = input.getAttribute("data-paid-until");
+      STATE.subscriptions[phone] = { ...(STATE.subscriptions[phone]||{}), paidUntil: input.value };
+      storSet("subscriptions", STATE.subscriptions);
+      render();
+    };
+  });
+  document.querySelectorAll("[data-payment-date]").forEach(input => {
+    input.onchange = () => {
+      const phone = input.getAttribute("data-payment-date");
+      STATE.subscriptions[phone] = { ...(STATE.subscriptions[phone]||{}), lastPaymentDate: input.value };
+      storSet("subscriptions", STATE.subscriptions);
+      render();
+    };
+  });
+  document.querySelectorAll("[data-remove-reg]").forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute("data-remove-reg");
+      STATE.regs = STATE.regs.filter(r => r.id !== id);
+      storSet("registrations", STATE.regs);
+      render();
+    };
+  });
+  document.querySelectorAll("[data-remove-group]").forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.getAttribute("data-remove-group");
+      STATE.groups = STATE.groups.filter(g => g.id !== id);
+      storSet("groups", STATE.groups);
+      render();
+    };
+  });
+
+  if ($("form-add-group")) {
+    $("form-add-group").onsubmit = (e) => {
+      e.preventDefault();
+      const f = e.target;
+      if (!f.name.value.trim() || !f.time.value.trim()) return;
+      STATE.groups.push({
+        id: uid(), name: f.name.value.trim(), subject: f.subject.value.trim(),
+        day: f.day.value, time: f.time.value.trim(), capacity: Number(f.capacity.value) || 15,
+      });
+      storSet("groups", STATE.groups);
+      render();
+    };
+  }
+
+  if ($("form-add-lesson")) {
+    $("form-add-lesson").onsubmit = (e) => {
+      e.preventDefault();
+      const f = e.target;
+      if (!f.title.value.trim() || !f.url.value.trim()) return;
+      scriptPost({ action: "addLesson", title: f.title.value.trim(), type: f.type.value, url: f.url.value.trim(), adminKey: STATE.settings.passcode })
+        .then((res) => { if (res && res.ok) fetchLessons(); });
+    };
+  }
+  document.querySelectorAll("[data-remove-lesson]").forEach(btn => {
+    btn.onclick = () => {
+      scriptPost({ action: "removeLesson", title: btn.getAttribute("data-lesson-title"), url: btn.getAttribute("data-lesson-url"), adminKey: STATE.settings.passcode })
+        .then((res) => { if (res && res.ok) fetchLessons(); });
+    };
+  });
+
+  document.querySelectorAll("[data-issue-code]").forEach(btn => {
+    btn.onclick = () => {
+      const phone = btn.getAttribute("data-issue-code");
+      const name = btn.getAttribute("data-issue-name") || "";
+      btn.disabled = true;
+      scriptPost({ action: "issueCode", phone: phone, name: name, adminKey: STATE.settings.passcode })
+        .then((res) => {
+          if (res && res.ok) {
+            STATE.remoteCodes[phone] = { code: res.code, bound: false, active: true };
+            render();
+            window.open(waLink(phone.replace(/[^0-9]/g,""), `مرحباً ${name}، رمز دخولك إلى فضاء الدروس هو: ${res.code}\nهذا الرمز خاص بجهازك الأول فقط، لا تشاركه مع أحد.`), "_blank");
+          }
+        });
+    };
+  });
+  document.querySelectorAll("[data-revoke-code]").forEach(btn => {
+    btn.onclick = () => {
+      const phone = btn.getAttribute("data-revoke-code");
+      scriptPost({ action: "revokeCode", phone: phone, adminKey: STATE.settings.passcode })
+        .then((res) => { if (res && res.ok) { if (STATE.remoteCodes[phone]) STATE.remoteCodes[phone].active = false; render(); } });
+    };
+  });
+
+  if ($("form-settings-email")) {
+    $("form-settings-email").onsubmit = (e) => {
+      e.preventDefault();
+      STATE.settings.email = e.target.email.value.trim();
+      STATE.settings.zoomLink = e.target.zoomLink.value.trim();
+      STATE.settings.scriptUrl = e.target.scriptUrl.value.trim();
+      storSet("settings", STATE.settings);
+      $("email-saved-msg").innerHTML = `<div class="ok-msg">${icon("check",15)} تم الحفظ</div>`;
+      setTimeout(() => { if ($("email-saved-msg")) $("email-saved-msg").innerHTML = ""; }, 2500);
+    };
+  }
+  if ($("form-settings-pass")) {
+    $("form-settings-pass").onsubmit = (e) => {
+      e.preventDefault();
+      const p1 = e.target.pass1.value, p2 = e.target.pass2.value;
+      const msgEl = $("pass-msg");
+      if (!p1.trim() || p1 !== p2) { msgEl.innerHTML = `<p class="err">تأكد من تطابق الرمز الجديد في الحقلين</p>`; return; }
+      STATE.settings.passcode = p1;
+      storSet("settings", STATE.settings);
+      msgEl.innerHTML = `<p class="muted" style="font-size:.85rem">تم تحديث رمز الدخول</p>`;
+      e.target.reset();
+      setTimeout(() => { if (msgEl) msgEl.innerHTML = ""; }, 2500);
+    };
+  }
+}
+
+render();
+</script>
+</body>
+</html>
