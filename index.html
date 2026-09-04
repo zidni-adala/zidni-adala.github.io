@@ -27,7 +27,8 @@
   label.field > span { display:block; font-weight:800; font-size:.9rem; margin-bottom:6px; }
   .card { background:#FAF6EE; border:1px solid #E3D6B8; border-radius:14px; padding:20px; }
 
-  nav.top { background:#1C1917; padding:12px 22px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10; }
+  nav.top { background:#1C1917; padding:12px 22px; display:flex; align-items:center; justify-content: flex-wrap:wrap; row-gap:8px;space-between; position:sticky; top:0; z-index:10; } 
+  @media (max-width:420px){ .navlinks{ gap:2px; } .navlinks button{ font-size:.8rem; padding:6px 8px; } }
   .navlinks { display:flex; align-items:center; gap:6px; }
   .navlinks button { background:none; border:none; color:#F5EDDD; font-weight:800; padding:7px 12px; cursor:pointer; display:flex; align-items:center; gap:6px; }
   .navlinks button:hover { color:#B08D57; }
